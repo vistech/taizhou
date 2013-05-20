@@ -3,11 +3,6 @@ package cn.com.vistech.tz.service;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,27 +36,13 @@ public class GPSService {
 	private MoutBoxDao moutBoxDao;
 	@Autowired
 	private GPSMediaDao gpsMediaDao;
-	@Autowired
-	private EntityManagerFactory entityManagerFactory;
 
 	public void addText(GPSBean gps) {
 		gPSDao.save(gps);
 	}
 
 	public void addText(GPSTraceBean trace) {
-		EntityManager em = entityManagerFactory.createEntityManager();
-
-		Query q = em.createNativeQuery("{call opengps_NewTrace(?,?,?,?,?,?)}");
-		q.setParameter(1, trace.getTracePK().getId());
-		q.setParameter(2, trace.getTracePK().getDt());
-		q.setParameter(3, trace.getLgtd());
-		q.setParameter(4, trace.getLttd());
-		q.setParameter(5, trace.getSpeed());
-		q.setParameter(6, trace.getDirection());
-		em.getTransaction().begin();
-		System.out.println("update..." + q.executeUpdate() + " records");
-		em.getTransaction().commit();
-		// traceDao.save(trace);
+		traceDao.pullNewTraceByProc(trace);
 	}
 
 	public List<HotAreaBean> getHotArea(String sim) {

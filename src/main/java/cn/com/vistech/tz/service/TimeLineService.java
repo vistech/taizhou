@@ -88,6 +88,8 @@ public class TimeLineService {
 
 			if (mediaType.equals("mp4")) {
 				mediaUrl = MessageFormat.format(mp4Url, media.getFileUrl());
+			}else if(mediaType.equals("txt")) {
+				mediaUrl = media.getRemarks();
 			}
 
 			Date upDate = media.getFileTime();
