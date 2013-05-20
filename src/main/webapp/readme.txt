@@ -1,1 +1,0 @@
-数据库配置文件： WEB-INF\classes\META-INF\persistence.xml
