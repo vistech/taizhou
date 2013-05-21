@@ -1,5 +1,7 @@
 package cn.com.vistech.tz.controller;
 
+import java.text.MessageFormat;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +102,28 @@ public class UploadFileController {
 					String fileName = fileBean.getFileName();
 					String fileType = fileName.substring(fileName
 							.lastIndexOf('.') + 1);
+
+					if (fileType.equals("amr")) {
+						String path = FileOperateUtil
+								.getFullParentPath(request) + "/";
+
+						String common = "{0}ffmpeg -i {0}{1}.amr {0}{1}.mp3";
+
+						common = MessageFormat.format(
+								common,
+								path,
+								fileBean.getFileUrl().substring(0,
+										fileBean.getFileUrl().indexOf('.')));
+
+						fileType = "mp3";
+
+						Runtime.getRuntime().exec(common);
+
+						fileBean.setFileUrl(fileBean.getFileUrl().replace(
+								"amr", "mp3"));
+						fileBean.setFileName(fileBean.getFileName().replace(
+								"amr", "mp3"));
+					}
 
 					fileBean.setMediaType(fileType);
 

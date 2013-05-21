@@ -47,6 +47,8 @@ public class TimeLineService {
 
 	private String txtCon;
 
+	private String mp3Url;
+
 	/**
 	 * 生成时间轴 json，特殊的，用于 会议管理 —— 查看
 	 * 
@@ -61,6 +63,8 @@ public class TimeLineService {
 		mp4Url = proper.getProperty("mp4Url");
 		// mapUrl = proper.getProperty("mapUrl");
 		txtCon = proper.getProperty("txtCon");
+
+		mp3Url = proper.getProperty("mp3Url");
 		String txtCon_none = proper.getProperty("txtCon_none");
 
 		Date nowDate = new Date();
@@ -88,8 +92,10 @@ public class TimeLineService {
 
 			if (mediaType.equals("mp4")) {
 				mediaUrl = MessageFormat.format(mp4Url, media.getFileUrl());
-			}else if(mediaType.equals("txt")) {
+			} else if (mediaType.equals("txt")) {
 				mediaUrl = media.getRemarks();
+			} else if (mediaType.equals("mp3")) {
+				mediaUrl = MessageFormat.format(mp3Url, media.getFileUrl());
 			}
 
 			Date upDate = media.getFileTime();
