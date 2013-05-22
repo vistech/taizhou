@@ -16,6 +16,7 @@ import cn.com.vistech.tz.bean.GPSBean;
 import cn.com.vistech.tz.bean.GPSTraceBean;
 import cn.com.vistech.tz.bean.GPSTracePKBean;
 import cn.com.vistech.tz.bean.HotAreaBean;
+import cn.com.vistech.tz.bean.OpenMAS_MOutBox;
 import cn.com.vistech.tz.service.GPSService;
 import cn.com.vistech.tz.util.DateEditor;
 
@@ -88,6 +89,12 @@ public class GPSController {
 	public Object sendMsg(String sim, String context) {
 		try {
 			gPSService.sendMsg(sim, context);
+			OpenMAS_MOutBox mob = new OpenMAS_MOutBox();
+			mob.setDt(new Date());
+			mob.setSim(sim);
+			mob.setInfo(context);
+			gPSService.addOpenMAS_MOutBox(mob);
+
 		} catch (Exception e) {
 			return false;
 		}

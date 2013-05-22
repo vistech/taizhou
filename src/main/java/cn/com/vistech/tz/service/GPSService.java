@@ -13,12 +13,14 @@ import cn.com.vistech.tz.bean.GPSTraceBean;
 import cn.com.vistech.tz.bean.HotAreaBean;
 import cn.com.vistech.tz.bean.HotAreaCheckInBean;
 import cn.com.vistech.tz.bean.MOutBoxBean;
+import cn.com.vistech.tz.bean.OpenMAS_MOutBox;
 import cn.com.vistech.tz.dao.GPSDao;
 import cn.com.vistech.tz.dao.GPSMediaDao;
 import cn.com.vistech.tz.dao.GPSTraceDao;
 import cn.com.vistech.tz.dao.HotAreaCheckInDao;
 import cn.com.vistech.tz.dao.HotAreaDao;
 import cn.com.vistech.tz.dao.MoutBoxDao;
+import cn.com.vistech.tz.dao.OpenMAS_MOutBoxDao;
 
 @Service
 @Transactional
@@ -36,9 +38,15 @@ public class GPSService {
 	private MoutBoxDao moutBoxDao;
 	@Autowired
 	private GPSMediaDao gpsMediaDao;
+	@Autowired
+	private OpenMAS_MOutBoxDao openMAS_MOutBoxDao;
 
 	public void addText(GPSBean gps) {
 		gPSDao.save(gps);
+	}
+
+	public void addOpenMAS_MOutBox(OpenMAS_MOutBox mob) {
+		openMAS_MOutBoxDao.save(mob);
 	}
 
 	public void addText(GPSTraceBean trace) {
