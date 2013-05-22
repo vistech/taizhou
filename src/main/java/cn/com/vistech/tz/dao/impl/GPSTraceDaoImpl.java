@@ -34,7 +34,6 @@ public class GPSTraceDaoImpl implements
 		paramMap.put("direction", trace.getDirection());
 		
 		
-		
 		Query query = em.createNativeQuery(querySql);
 
 		for (String paramName : paramMap.keySet()) {

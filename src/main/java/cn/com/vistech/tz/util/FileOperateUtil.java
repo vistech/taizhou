@@ -94,13 +94,13 @@ public class FileOperateUtil {
 	 */
 	private static String reportTraffic(long trafficPrint) {
 		if ((trafficPrint / 1000000000) > 0) {
-			return (trafficPrint / 1000000000 + " GB");
+			return (trafficPrint / 1000000000 + "");
 		} else if ((trafficPrint / 1000000) > 0) {
-			return (trafficPrint / 1000000 + " MB");
+			return (trafficPrint / 1000000 + "");
 		} else if ((trafficPrint / 1000) > 0) {
-			return (trafficPrint / 1000 + " kB");
+			return (trafficPrint / 1000 + "");
 		} else {
-			return (trafficPrint + " byte");
+			return (trafficPrint + "");
 		}
 	}
 
@@ -154,8 +154,8 @@ public class FileOperateUtil {
 	}
 
 	public static String getFullParentPath(HttpServletRequest request) {
-		String path = request.getSession().getServletContext().getRealPath(
-				FileOperateUtil.UPLOADDIR);
+		String path = request.getSession().getServletContext()
+				.getRealPath(FileOperateUtil.UPLOADDIR);
 
 		return path;
 	}
