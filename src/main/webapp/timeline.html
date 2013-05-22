@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 	function sendMsg(obj,sim){
-		var $_input = $(obj).parent().prev().children('textarea');
+		var $_input = $(obj).prev();
 		var context = $_input.val();
 	
 		$.ajax({
