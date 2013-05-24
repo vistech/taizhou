@@ -23,7 +23,7 @@ public class GPSServiceTest {
 
 	@Autowired
 	private GPSService gpsService;
-
+	@Test
 	public void addText() throws ParseException {
 		GPSTraceBean trace = new GPSTraceBean();
 		GPSTracePKBean tracePK = new GPSTracePKBean();
@@ -42,7 +42,7 @@ public class GPSServiceTest {
 	@Autowired
 	private ExecProDao execProDao;
 
-	@Test
+	
 	@Transactional
 	public void testPro() {
 		String callPro = "{call opengps_NewMedia(:sim,:filename,"

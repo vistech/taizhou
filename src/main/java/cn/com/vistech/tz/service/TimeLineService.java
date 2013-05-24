@@ -3,6 +3,7 @@ package cn.com.vistech.tz.service;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -27,10 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.com.vistech.tz.bean.DeviceBean;
 import cn.com.vistech.tz.bean.GPSMediaBean;
+import cn.com.vistech.tz.bean.GoogleMapBean;
 import cn.com.vistech.tz.bean.show.TimelineBean;
 import cn.com.vistech.tz.bean.show.TimelineBean.Asset;
 import cn.com.vistech.tz.dao.DeviceDao;
 import cn.com.vistech.tz.dao.GPSMediaDao;
+import cn.com.vistech.tz.dao.GoogleMapDao;
 
 @Service
 @Transactional
@@ -41,6 +45,9 @@ public class TimeLineService {
 	@Autowired
 	private DeviceDao deviceDao;
 
+	@Autowired
+	private GoogleMapDao googleMapDao;
+
 	private DateFormat dfTime = new SimpleDateFormat("M/d/yyyy HH:mm:ss");
 
 	private String mp4Url;
@@ -48,7 +55,9 @@ public class TimeLineService {
 	private String txtCon;
 
 	private String mp3Url;
-
+	
+	private Logger logger = Logger.getLogger(TimeLineService.class);
+	
 	/**
 	 * 生成时间轴 json，特殊的，用于 会议管理 —— 查看
 	 * 
@@ -81,6 +90,8 @@ public class TimeLineService {
 		List<GPSMediaBean> mediaList = mediaDao.findByFileTimeBetweenAndIsHide(
 				new Sort(Direction.ASC, new String[] { "fileTime" }),
 				startDate, endDate, false);
+
+		DecimalFormat df = new DecimalFormat("#.00");
 
 		Integer i = 0;
 		for (GPSMediaBean media : mediaList) {
@@ -129,8 +140,24 @@ public class TimeLineService {
 					lgtd = 121.19056d;
 					lttd = 29.18766d;
 				}
-
 			}
+
+			GoogleMapBean googleBean = googleMapDao.findByLaAndLo(
+					df.format(lttd), df.format(lgtd));
+
+			if (googleBean != null) {
+				logger.info("转换前 --> "+lttd+","+lgtd);
+				
+				Double gOffLa = googleBean.getOffLa();
+				Double gOffLo = googleBean.getOffLo();
+
+				lttd = lttd +  gOffLa;
+				lgtd = lgtd +  gOffLo;
+				
+				logger.info("转换后 --> "+lttd+","+lgtd);
+			}
+			
+			
 
 			String txtArea = null;
 			if (userType.equals("admin")) {

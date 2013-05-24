@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.com.vistech.tz.bean.DeviceBean;
 import cn.com.vistech.tz.bean.GPSBean;
 import cn.com.vistech.tz.bean.GPSMediaBean;
 import cn.com.vistech.tz.bean.GPSTraceBean;
@@ -14,6 +15,7 @@ import cn.com.vistech.tz.bean.HotAreaBean;
 import cn.com.vistech.tz.bean.HotAreaCheckInBean;
 import cn.com.vistech.tz.bean.MOutBoxBean;
 import cn.com.vistech.tz.bean.OpenMAS_MOutBox;
+import cn.com.vistech.tz.dao.DeviceDao;
 import cn.com.vistech.tz.dao.GPSDao;
 import cn.com.vistech.tz.dao.GPSMediaDao;
 import cn.com.vistech.tz.dao.GPSTraceDao;
@@ -40,7 +42,10 @@ public class GPSService {
 	private GPSMediaDao gpsMediaDao;
 	@Autowired
 	private OpenMAS_MOutBoxDao openMAS_MOutBoxDao;
-
+	@Autowired
+	private DeviceDao deviceDao;
+	
+	
 	public void addText(GPSBean gps) {
 		gPSDao.save(gps);
 	}
@@ -85,4 +90,15 @@ public class GPSService {
 		mediaBean.setIsRead(isCheck);
 		gpsMediaDao.save(mediaBean);
 	}
+	
+	public void setInOrOut(String sim,Boolean checkIn){
+		DeviceBean device = deviceDao.findBySim(sim);
+		
+		if(device!=null){
+			device.setIsCheckIn(checkIn);
+			deviceDao.save(device);
+		}
+	}
+	
+	
 }

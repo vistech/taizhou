@@ -27,7 +27,7 @@ public class GPSController {
 	private GPSService gPSService;
 
 	@InitBinder
-	public void initBinder(WebDataBinder binder) {
+	public void initBinder(WebDataBinder binder) { 
 		binder.registerCustomEditor(Date.class, new DateEditor());
 	}
 
@@ -123,6 +123,28 @@ public class GPSController {
 			return false;
 		}
 
+		return true;
+	}
+
+	@RequestMapping(value = "/get/inClient")
+	@ResponseBody
+	public Object gpsPois(String mcode) {
+		try {
+			gPSService.setInOrOut(mcode, true);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	@RequestMapping(value = "/get/extClient")
+	@ResponseBody
+	public Object extClient(String mcode) {
+		try {
+			gPSService.setInOrOut(mcode, false);
+		} catch (Exception e) {
+			return false;
+		}
 		return true;
 	}
 }
