@@ -36,7 +36,7 @@ public class UploadFileController {
 			String lgtd, String lttd) {
 		GPSMediaBean gpsMedia = new GPSMediaBean();
 		gpsMedia.setLgtd(Double.parseDouble(lgtd));
-		gpsMedia.setLgtd(Double.parseDouble(lttd));
+		gpsMedia.setLttd(Double.parseDouble(lttd));
 		gpsMedia.setRisks(risks);
 		gpsMedia.setRemarks(remarks);
 		gpsMedia.setSIM(telnum);
