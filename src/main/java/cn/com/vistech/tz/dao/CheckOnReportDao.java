@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface CheckOnReportDao {
 	List<?> Opengps_spReport(String reportName);
+	List<?> ChuQingSort_Report();
 }

@@ -13,14 +13,13 @@
 <body>
 	<div id="tabs1" class="mini-tabs" activeIndex="0" style="width:100%;height:100%;">
 		<div name="tab1" title="今日报告">
-	<div id="employee_grid" class="mini-datagrid" style="width:100%;height:117px;" showPager="false" url="/resources/json/today.json">
+	<div id="employee_grid" class="mini-datagrid" style="width:100%;height:117px;" showPager="false" url="getCheckOnReportJson">
         <div property="columns">
-        	<div field="c0" width="40" headerAlign="center" align="center">\</div>        
-            <div field="c1" width="50" headerAlign="center" align="center">满勤</div>
-            <div field="c2" width="50" headerAlign="center" align="center">满勤率</div> 
-            <div field="c3" width="50" headerAlign="center" align="center">站点数</div>  
-            <div field="c4" width="50" headerAlign="center" align="center">起日期</div>  
-            <div field="c5" width="50" headerAlign="center" align="center">止日期</div>                               
+        	<div field="category" width="40" headerAlign="center" align="center">\</div>        
+            <div field="fullAttendance" width="50" headerAlign="center" align="center">满勤</div>
+            <div field="fullAttendanceRate" width="50" headerAlign="center" align="center">满勤率</div>  
+            <div field="bDate" width="50" headerAlign="center" align="center">起日期</div>  
+            <div field="eDate" width="50" headerAlign="center" align="center">止日期</div>                               
         </div>
     </div> 
 		</div>
@@ -33,7 +32,6 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		//var Genders = [{ c1: '今日', c2: '男', c3: '男', c4: '男', c5: '男', c6: '男' },{ c1: '昨日', c2: '男', c3: '男', c4: '男', c5: '男', c6: '男' }];
 		mini.parse();
 		var grid = mini.get("employee_grid");
         grid.load();

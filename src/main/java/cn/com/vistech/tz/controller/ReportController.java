@@ -1,5 +1,6 @@
 package cn.com.vistech.tz.controller;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.vistech.tz.bean.report.CheckOnReport;
+import cn.com.vistech.tz.bean.report.ChuQingSort_ReportBean;
 import cn.com.vistech.tz.service.CheckOnReportService;
 
 @Controller
@@ -23,13 +25,31 @@ public class ReportController {
 	public Map<String, Object> helloReport() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("chengziqing", "程子清");
+		map.put("reportName", "tzfb");
+		return map;
+	}
+
+	@RequestMapping(value = "/checkOnReport")
+	public Map<String, Object> checkOnReport(String reportName) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("reportName", reportName);
 		return map;
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/getCheckOnReportJson", method = RequestMethod.GET)
-	public List<CheckOnReport> getCheckOnReportJson() {
-		List<CheckOnReport> crs = checkOnReportService.getCheckOnReport("tzfb");
+	@RequestMapping(value = "/getCheckOnReportJson")
+	public List<CheckOnReport> getCheckOnReportJson(String reportName)
+			throws ParseException {
+		List<CheckOnReport> crs = checkOnReportService
+				.getCheckOnReport(reportName);
 		return crs;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getChuQingSort_Reportjson")
+	public List<ChuQingSort_ReportBean> getChuQingSort_Reportjson() {
+		List<ChuQingSort_ReportBean> cqs = checkOnReportService
+				.getChuQingSort_ReportBean();
+		return cqs;
 	}
 }
