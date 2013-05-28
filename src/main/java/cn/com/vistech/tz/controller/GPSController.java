@@ -27,7 +27,7 @@ public class GPSController {
 	private GPSService gPSService;
 
 	@InitBinder
-	public void initBinder(WebDataBinder binder) { 
+	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(Date.class, new DateEditor());
 	}
 
@@ -50,13 +50,10 @@ public class GPSController {
 		return "OK";
 	}
 
-	@RequestMapping(value = "/show")
+	@RequestMapping(value = "/isok")
 	public @ResponseBody
-	Map<String, String> show() {
-		Map<String, String> result = new HashMap<String, String>();
-		result.put("a", "b");
-		result.put("d", "c");
-		return result;
+	String isOK() {
+		return "OK";
 	}
 
 	@RequestMapping(value = "/get/gpsPois")
