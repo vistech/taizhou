@@ -34,13 +34,13 @@ public class TimeLineController {
 	@RequestMapping(value = "/showTimeLine")
 	public @ResponseBody
 	Map<String, Object> showTimeLine(Date startDate, Date endDate,
-			String userType) {
+			String userType, String sim, String userName, String alertType) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		Object[] showTimeResult = null;
 
 		try {
 			showTimeResult = timeLineService.buildShowTimeLine(startDate,
-					endDate, userType);
+					endDate, userType, sim, userName, alertType);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

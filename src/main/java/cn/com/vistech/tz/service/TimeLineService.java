@@ -7,6 +7,8 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +24,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,15 +33,19 @@ import cn.com.vistech.tz.bean.GoogleMapBean;
 import cn.com.vistech.tz.bean.show.TimelineBean;
 import cn.com.vistech.tz.bean.show.TimelineBean.Asset;
 import cn.com.vistech.tz.dao.DeviceDao;
-import cn.com.vistech.tz.dao.GPSMediaDao;
+import cn.com.vistech.tz.dao.ExecProDao;
 import cn.com.vistech.tz.dao.GoogleMapDao;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Service
 @Transactional
 public class TimeLineService {
+	// @Autowired
+	// private GPSMediaDao mediaDao;
 	@Autowired
-	private GPSMediaDao mediaDao;
-
+	private ExecProDao execProDao;
 	@Autowired
 	private DeviceDao deviceDao;
 
@@ -55,9 +59,10 @@ public class TimeLineService {
 	private String txtCon;
 
 	private String mp3Url;
-	
+	private String txtCon_none;
+
 	private Logger logger = Logger.getLogger(TimeLineService.class);
-	
+
 	/**
 	 * 生成时间轴 json，特殊的，用于 会议管理 —— 查看
 	 * 
@@ -66,15 +71,15 @@ public class TimeLineService {
 	 */
 	@Transactional
 	public Object[] buildShowTimeLine(Date startDate, Date endDate,
-			String userType) throws IOException {
+			String userType, String sim, String userName, String alertType)
+			throws IOException {
 		Properties proper = PropertiesLoaderUtils
 				.loadAllProperties("/system.properties");
 		mp4Url = proper.getProperty("mp4Url");
-		// mapUrl = proper.getProperty("mapUrl");
 		txtCon = proper.getProperty("txtCon");
 
 		mp3Url = proper.getProperty("mp3Url");
-		String txtCon_none = proper.getProperty("txtCon_none");
+		txtCon_none = proper.getProperty("txtCon_none");
 
 		Date nowDate = new Date();
 
@@ -83,16 +88,40 @@ public class TimeLineService {
 			endDate = nowDate;
 		}
 
+		String callSql = "{call opengps_getMediaData :sim,:username,:alerttype}";
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("sim", sim);
+		params.put("username", userName);
+		params.put("alerttype", alertType);
+
+		List<GPSMediaBean> mediaList = execProDao.findSome(GPSMediaBean.class,
+				callSql, params);
+
+		List<GPSMediaBean> showMediaList = Lists.newArrayList();
+
+		for (GPSMediaBean media : mediaList) {
+			Date dt = media.getFileTime();
+			if (!media.getIsHide() && dt.after(startDate) && dt.before(endDate)) {
+				showMediaList.add(media);
+			}
+		}
+		Collections.sort(showMediaList, new Comparator<GPSMediaBean>() {
+			@Override
+			public int compare(GPSMediaBean o1, GPSMediaBean o2) {
+				return o1.getFileTime().compareTo(o2.getFileTime());
+			}
+		});
+
+		return this.createTimeLine(showMediaList, userType);
+	}
+
+	private Object[] createTimeLine(List<GPSMediaBean> mediaList,
+			String userType) throws IOException {
+
+		DecimalFormat df = new DecimalFormat("#.00");
 		TimelineBean jsonTimeLine = new TimelineBean();
 		List<TimelineBean> date = null;
 		Asset asset = null;
-
-		List<GPSMediaBean> mediaList = mediaDao.findByFileTimeBetweenAndIsHide(
-				new Sort(Direction.ASC, new String[] { "fileTime" }),
-				startDate, endDate, false);
-
-		DecimalFormat df = new DecimalFormat("#.00");
-
 		Integer i = 0;
 		for (GPSMediaBean media : mediaList) {
 			DeviceBean device = deviceDao.findBySim(media.getSIM());
@@ -146,18 +175,16 @@ public class TimeLineService {
 					df.format(lttd), df.format(lgtd));
 
 			if (googleBean != null) {
-				logger.info("转换前 --> "+lttd+","+lgtd);
-				
+				logger.info("转换前 --> " + lttd + "," + lgtd);
+
 				Double gOffLa = googleBean.getOffLa();
 				Double gOffLo = googleBean.getOffLo();
 
-				lttd = lttd +  gOffLa;
-				lgtd = lgtd +  gOffLo;
-				
-				logger.info("转换后 --> "+lttd+","+lgtd);
+				lttd = lttd + gOffLa;
+				lgtd = lgtd + gOffLo;
+
+				logger.info("转换后 --> " + lttd + "," + lgtd);
 			}
-			
-			
 
 			String txtArea = null;
 			if (userType.equals("admin")) {
@@ -204,14 +231,11 @@ public class TimeLineService {
 
 				timeLine.asset = asset;
 			}
-
 			i++;
 		}
 
 		Map<String, Object> root = new HashMap<String, Object>();
 		root.put("timeline", jsonTimeLine);
-
-		// String result = gson.toJson(root);
 
 		UUID uuid = UUID.randomUUID();
 		String jsonName = uuid.toString();
@@ -226,8 +250,6 @@ public class TimeLineService {
 		JsonGenerator jsonG = mapper.getJsonFactory().createJsonGenerator(
 				new File(path), JsonEncoding.UTF8);
 		jsonG.writeObject(root);
-
-		// FileReaderWriter.writerFile(path, result);
 
 		int mediaSize = mediaList.size() - 1;
 
