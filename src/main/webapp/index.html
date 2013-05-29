@@ -19,13 +19,20 @@
 					var startDate = $.query.get("startDate");
 					var endDate = $.query.get("endDate");
 					var userType = $.query.get("userType");
+					var sim = $.query.get('sim');
+					var userName = $.query.get('userName');
+					var alertType = $.query.get('alertType'); 
 					
 					$.ajax({
 						url : "jsp/showTimeLine",
 						data : {
 							startDate : startDate,
 							endDate : endDate,
-							userType : userType
+							userType : userType,
+							sim : sim,
+							userName : userName,
+							alertType : alertType
+							
 						},
 						success : function(json) {
 							var fileName = json.json_name;
@@ -37,13 +44,15 @@
 							var end_date = json.end_date;
 							var total_size = json.json_size;
 							
-							if(start_date){
-								window.location.href = "timeline.html?start_date="
-									+ start_date + "&end_date=" + end_date
-									+ "&fileName=" + fileName+"#"+total_size;
-							}else{
-								window.location.href = "timeline.html?fileName=" + fileName+"#"+total_size;
-							}
+							//if(start_date){
+							//	window.location.href = "timeline.html?start_date="
+							//		+ start_date + "&end_date=" + end_date
+							//		+ "&fileName=" + fileName+"#"+total_size;
+							//}else{
+							//	window.location.href = "timeline.html?fileName=" + fileName+"#"+total_size;
+							//}
+							
+							window.location.href = "timeline.html?fileName=" + fileName+"#"+total_size;
 						}
 					});
 				});

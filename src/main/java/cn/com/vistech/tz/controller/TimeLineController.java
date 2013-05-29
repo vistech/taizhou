@@ -28,7 +28,6 @@ public class TimeLineController {
 
 	/**
 	 * 时间轴数据
-	 * 
 	 * @return
 	 */
 	@RequestMapping(value = "/showTimeLine")

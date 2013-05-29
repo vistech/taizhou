@@ -88,11 +88,11 @@ public class TimeLineService {
 			endDate = nowDate;
 		}
 
-		String callSql = "{call opengps_getMediaData :sim,:username,:alerttype}";
+		String callSql = "{call opengps_getMediaData (:sim,:username,:sType)}";
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("sim", sim);
 		params.put("username", userName);
-		params.put("alerttype", alertType);
+		params.put("sType", alertType);
 
 		List<GPSMediaBean> mediaList = execProDao.findSome(GPSMediaBean.class,
 				callSql, params);
