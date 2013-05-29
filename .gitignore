@@ -2,4 +2,5 @@
 .classpath
 .mymetadata
 .project
+.externalToolBuilders
 target
