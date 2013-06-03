@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,6 +29,7 @@ public class TimeLineController {
 
 	/**
 	 * 时间轴数据
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = "/showTimeLine")
@@ -36,6 +38,10 @@ public class TimeLineController {
 			String userType, String sim, String userName, String alertType) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		Object[] showTimeResult = null;
+
+		if (endDate != null) {
+			endDate = DateUtils.addDays(endDate, 1);
+		}
 
 		try {
 			showTimeResult = timeLineService.buildShowTimeLine(startDate,
