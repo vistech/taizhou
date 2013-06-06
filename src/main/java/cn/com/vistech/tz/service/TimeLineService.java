@@ -235,9 +235,12 @@ public class TimeLineService {
 
 					timeLine.asset = asset;
 				}
+				
 				i++;
 			}
-		} else {
+		} 
+		
+		if(mediaList.isEmpty()){
 			jsonTimeLine.headline = "系统提示";
 			jsonTimeLine.type = "default";
 			jsonTimeLine.startDate = dfTime.format(new Date());
@@ -251,6 +254,18 @@ public class TimeLineService {
 
 			jsonTimeLine.date = dates;
 		}
+		
+		if(jsonTimeLine.date.isEmpty()){
+			List<TimelineBean> dates = Lists.newArrayList();
+
+			TimelineBean timeLine = new TimelineBean();
+			timeLine.headline = " ";
+			timeLine.startDate = dfTime.format(new Date());
+			dates.add(timeLine);
+
+			jsonTimeLine.date = dates;
+		}
+		
 
 		Map<String, Object> root = new HashMap<String, Object>();
 		root.put("timeline", jsonTimeLine);
