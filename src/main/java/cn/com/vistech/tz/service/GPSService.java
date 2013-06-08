@@ -2,10 +2,13 @@ package cn.com.vistech.tz.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Maps;
 
 import cn.com.vistech.tz.bean.DeviceBean;
 import cn.com.vistech.tz.bean.GPSBean;
@@ -16,6 +19,7 @@ import cn.com.vistech.tz.bean.HotAreaCheckInBean;
 import cn.com.vistech.tz.bean.MOutBoxBean;
 import cn.com.vistech.tz.bean.OpenMAS_MOutBox;
 import cn.com.vistech.tz.dao.DeviceDao;
+import cn.com.vistech.tz.dao.ExecProDao;
 import cn.com.vistech.tz.dao.GPSDao;
 import cn.com.vistech.tz.dao.GPSMediaDao;
 import cn.com.vistech.tz.dao.GPSTraceDao;
@@ -44,8 +48,9 @@ public class GPSService {
 	private OpenMAS_MOutBoxDao openMAS_MOutBoxDao;
 	@Autowired
 	private DeviceDao deviceDao;
-	
-	
+	@Autowired
+	private ExecProDao execProxDao;
+
 	public void addText(GPSBean gps) {
 		gPSDao.save(gps);
 	}
@@ -90,15 +95,41 @@ public class GPSService {
 		mediaBean.setIsRead(isCheck);
 		gpsMediaDao.save(mediaBean);
 	}
-	
-	public void setInOrOut(String sim,Boolean checkIn){
+
+	public void setInOrOut(String sim, Boolean checkIn) {
 		DeviceBean device = deviceDao.findBySim(sim);
-		
-		if(device!=null){
+
+		if (device != null) {
 			device.setIsCheckIn(checkIn);
 			deviceDao.save(device);
 		}
 	}
-	
-	
+
+	public Integer gpsLoginCheck(String userName, String pass) {
+		String callSql = "{call opengps_LoginCheck (:userName,:pass)}";
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("userName", userName);
+		params.put("pass", pass);
+
+		List<Integer> result = execProxDao.findSome(null, callSql, params);
+		Integer sign = result.get(0);
+
+		return sign;
+	}
+
+	public Integer gpsLoginPassword(String userName, String pass) {
+
+		String callSql = "{call opengps_ChangePWD (:userName,:pass)}";
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("userName", userName);
+		params.put("pass", pass);
+
+		try {
+			execProxDao.execPro(callSql, params);
+			return 1;
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
 }

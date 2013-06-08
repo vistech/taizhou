@@ -142,4 +142,16 @@ public class GPSController {
 		}
 		return true;
 	}
+
+	@RequestMapping(value = "/get/gpsLoginCheck")
+	@ResponseBody
+	public Object gpsLoginCheck(String username, String password) {
+		return gPSService.gpsLoginCheck(username, password);
+	}
+
+	@RequestMapping(value = "/set/gpsLoginPassword")
+	@ResponseBody
+	public Object gpsLoginPassword(String username, String password) {
+		return gPSService.gpsLoginPassword(username, password);
+	}
 }

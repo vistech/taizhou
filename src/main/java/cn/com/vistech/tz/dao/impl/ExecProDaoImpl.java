@@ -42,7 +42,12 @@ public class ExecProDaoImpl implements ExecProDao {
 	@Override
 	public <T> List<T> findSome(Class<T> clazz, String callPro,
 			Map<String, Object> params) {
-		Query query = em.createNativeQuery(callPro, clazz);
+		Query query = null;
+		if (clazz != null) {
+			query = em.createNativeQuery(callPro, clazz);
+		} else {
+			query = em.createNativeQuery(callPro);
+		}
 
 		if (params != null) {
 			for (String paramName : params.keySet()) {

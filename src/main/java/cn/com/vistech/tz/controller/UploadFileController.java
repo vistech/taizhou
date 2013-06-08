@@ -1,10 +1,13 @@
 package cn.com.vistech.tz.controller;
 
-import java.text.MessageFormat;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -69,13 +72,13 @@ public class UploadFileController {
 				.omitEmptyStrings().split(remarks);
 
 		Iterable<String> risksIter = Splitter.on(andSpliter).omitEmptyStrings()
-				.split(risks);
+				.split(risks == null ? "" : risks);
 
 		Iterable<String> lgtdIter = Splitter.on(andSpliter).omitEmptyStrings()
-				.split(lgtd);
+				.split(lgtd == null ? "" : lgtd);
 
 		Iterable<String> lttdIter = Splitter.on(andSpliter).omitEmptyStrings()
-				.split(lttd);
+				.split(lttd == null ? "" : lttd);
 
 		Boolean flag = true;
 
@@ -90,9 +93,12 @@ public class UploadFileController {
 					String fileRemark = (Iterables.size(innerStrIter) == 2 ? Iterables
 							.get(innerStrIter, 1) : "");
 
-					String risk = Iterables.get(risksIter, index);
-					String signLgtd = Iterables.get(lgtdIter, index);
-					String signLttd = Iterables.get(lttdIter, index);
+					String risk = Iterables.isEmpty(risksIter) ? "" : Iterables
+							.get(risksIter, index);
+					String signLgtd = Iterables.isEmpty(lgtdIter) ? ""
+							: Iterables.get(lgtdIter, index);
+					String signLttd = Iterables.isEmpty(lttdIter) ? ""
+							: Iterables.get(lttdIter, index);
 
 					GPSMediaBean fileBean = FileOperateUtil.upload(f, request);
 
@@ -103,30 +109,67 @@ public class UploadFileController {
 					String fileType = fileName.substring(fileName
 							.lastIndexOf('.') + 1);
 
-					if (fileType.equals("amr")) {
-						String path = FileOperateUtil
-								.getFullParentPath(request) + "/";
-
-						String common = "{0}ffmpeg -i {0}{1}.amr {0}{1}.mp3";
-
-						common = MessageFormat.format(
-								common,
-								path,
-								fileBean.getFileUrl().substring(0,
-										fileBean.getFileUrl().indexOf('.')));
+					String path = FileOperateUtil.getFullParentPath(request)
+							+ "/";
+					String appPath = path + "ffmpeg/bin/ffmpeg";
+					String fileNameNotSuffix = fileBean.getFileUrl().substring(
+							0, fileBean.getFileUrl().lastIndexOf('.'));
+					if (fileType.equals("amr")) { // amr to mp3
+						ProcessBuilder process = new ProcessBuilder(appPath,
+								"-i", path + fileNameNotSuffix + ".amr", path
+										+ fileNameNotSuffix + ".mp3");
+						this.execProc(process);
 
 						fileType = "mp3";
-
-						Runtime.getRuntime().exec(common);
 
 						fileBean.setFileUrl(fileBean.getFileUrl().replace(
 								"amr", "mp3"));
 						fileBean.setFileName(fileBean.getFileName().replace(
 								"amr", "mp3"));
+
+						FileSystemResource fileR = new FileSystemResource(path
+								+ fileNameNotSuffix + ".amr");
+						if (fileR.exists())
+							fileR.getFile().delete();
+					} else if (fileType.equals("3gp")) {// 3gp to mp4
+						ProcessBuilder process = new ProcessBuilder(appPath,
+								"-i", path + fileNameNotSuffix + ".3gp",
+								"-acodec", "copy", path + fileNameNotSuffix
+										+ ".mp4");
+						this.execProc(process);
+
+						fileType = "mp4";
+
+						fileBean.setFileUrl(fileBean.getFileUrl().replace(
+								"3gp", "mp4"));
+						fileBean.setFileName(fileBean.getFileName().replace(
+								"3gp", "mp4"));
+
+						FileSystemResource fileR = new FileSystemResource(path
+								+ fileNameNotSuffix + ".3gp");
+						if (fileR.exists())
+							fileR.getFile().delete();
+
+					} else if (fileType.equals("mp4")) {// mp4 to mp4 修复
+						ProcessBuilder process = new ProcessBuilder(appPath,
+								"-i", path + fileNameNotSuffix + ".mp4",
+								"-vcodec", "libx264", path + fileNameNotSuffix
+										+ "_r.mp4");
+
+						this.execProc(process);
+
+						fileType = "mp4";
+
+						fileBean.setFileUrl(fileBean.getFileUrl().replace(".",
+								"_r."));
+
+						FileSystemResource fileR = new FileSystemResource(path
+								+ fileNameNotSuffix + ".mp4");
+						if (fileR.exists())
+							fileR.getFile().delete();
 					}
 
 					fileBean.setMediaType(fileType);
-
 					fileBean.setRisks(risk);
 
 					fileBean.setLgtd(Double.parseDouble(signLgtd));
@@ -134,7 +177,6 @@ public class UploadFileController {
 
 					uploadFileService.save(fileBean);
 				}
-
 			}
 		} catch (Exception e) {
 			flag = false;
@@ -144,4 +186,18 @@ public class UploadFileController {
 		return flag;
 	}
 
+	private Integer execProc(ProcessBuilder process) throws IOException,
+			InterruptedException {
+		process.redirectErrorStream(true);
+		Process pro = process.start();
+		// 需要处理标准输入
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				pro.getInputStream()));
+		String tmp = null;
+		while ((tmp = br.readLine()) != null) {
+			TraceInterceptor.logger4J.info(tmp);
+		}
+		return pro.waitFor();
+
+	}
 }

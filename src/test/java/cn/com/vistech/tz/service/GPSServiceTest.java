@@ -1,6 +1,7 @@
 package cn.com.vistech.tz.service;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -23,7 +24,7 @@ public class GPSServiceTest {
 
 	@Autowired
 	private GPSService gpsService;
-	@Test
+	
 	public void addText() throws ParseException {
 		GPSTraceBean trace = new GPSTraceBean();
 		GPSTracePKBean tracePK = new GPSTracePKBean();
@@ -61,5 +62,15 @@ public class GPSServiceTest {
 		params.put("lttd", 10.1);
 //
 		execProDao.execPro(callPro, params);
+	}
+	
+	@Test
+	public void testCount(){
+		String call = "{call test_media}";
+		
+		List<Integer> result = execProDao.findSome(null, call, null);
+		
+		System.out.println(result);
+		
 	}
 }
