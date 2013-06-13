@@ -42,8 +42,6 @@ import com.google.common.collect.Maps;
 @Service
 @Transactional
 public class TimeLineService {
-	// @Autowired
-	// private GPSMediaDao mediaDao;
 	@Autowired
 	private ExecProDao execProDao;
 	@Autowired
@@ -54,6 +52,7 @@ public class TimeLineService {
 
 	private DateFormat dfTime = new SimpleDateFormat("M/d/yyyy HH:mm:ss");
 
+	private DateFormat otTime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	private String mp4Url;
 
 	private String txtCon;
@@ -143,6 +142,8 @@ public class TimeLineService {
 				Date upDate = media.getFileTime();
 				String startDateStr = dfTime.format(upDate);
 
+				String bottomDateStr = otTime.format(upDate);
+
 				String risksImg = "1.png";
 				String risks = StringUtils.trim(media.getRisks());
 
@@ -194,13 +195,13 @@ public class TimeLineService {
 							.getRemarks(), media.getSIM(), lgtd, lttd, String
 							.valueOf(new Date().getTime()), String
 							.valueOf(media.getId()),
-							media.getIsRead() ? "checked" : "");
+							media.getIsRead() ? "checked" : "", bottomDateStr);
 				} else {
 					txtArea = MessageFormat.format(txtCon_none, risksImg, media
 							.getRemarks(), media.getSIM(), lgtd, lttd, String
 							.valueOf(new Date().getTime()), String
 							.valueOf(media.getId()),
-							media.getIsRead() ? "checked" : "");
+							media.getIsRead() ? "checked" : "", bottomDateStr);
 				}
 
 				if (i == 0) {
@@ -235,12 +236,12 @@ public class TimeLineService {
 
 					timeLine.asset = asset;
 				}
-				
+
 				i++;
 			}
-		} 
-		
-		if(mediaList.isEmpty()){
+		}
+
+		if (mediaList.isEmpty()) {
 			jsonTimeLine.headline = "系统提示";
 			jsonTimeLine.type = "default";
 			jsonTimeLine.startDate = dfTime.format(new Date());
@@ -254,8 +255,8 @@ public class TimeLineService {
 
 			jsonTimeLine.date = dates;
 		}
-		
-		if(jsonTimeLine.date.isEmpty()){
+
+		if (jsonTimeLine.date.isEmpty()) {
 			List<TimelineBean> dates = Lists.newArrayList();
 
 			TimelineBean timeLine = new TimelineBean();
@@ -265,7 +266,6 @@ public class TimeLineService {
 
 			jsonTimeLine.date = dates;
 		}
-		
 
 		Map<String, Object> root = new HashMap<String, Object>();
 		root.put("timeline", jsonTimeLine);
