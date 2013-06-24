@@ -7,46 +7,74 @@
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="cache-control" content="no-cache">
 	<meta http-equiv="expires" content="0"></head>
-	<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
-	<link href="../../resources/miniui/scripts/miniui/themes/gray/skin.css" rel="stylesheet" type="text/css" />
-	<script src="../../resources/miniui/scripts/boot.js" type="text/javascript"></script>
+	<style type="text/css">
+		body{
+			font-family:Tahoma, Verdana, 宋体;
+		}
+		.table-bordered{
+			border:1px solid #A5ACB5;
+			border-collapse:separate;
+			border-left:0;
+			width:100%;
+			background-color:transparent;
+			border-spacing:0;
+			font-size:12px;
+		}
+		.table-bordered th, .table-bordered td{
+			border-left:1px solid #A5ACB5;
+			line-height:20px;
+			padding:5px;
+			font-size:12px;
+		}
+		.table-bordered td{
+			border-top:1px solid #A5ACB5;
+		}
+		.table-bordered th{
+			font-weight:bold;
+		}
+	</style>
 <body>
-	<div id="tabs1" class="mini-tabs" activeIndex="0" style="width:100%;height:100%;">
-		<div name="tab1" title="今日报告">
-			<h2>一、出勤报告</h2>
-	<div id="employee_grid" class="mini-datagrid" style="width:100%;height:117px;" showPager="false" url="getCheckOnReportJson?reportName=${reportName}">
-        <div property="columns">
-        	<div field="category" width="60" headerAlign="center" align="center">\</div>        
-            <div field="fullAttendance" width="80" headerAlign="center" align="center">满勤</div>
-            <div field="fullAttendanceRate" width="80" headerAlign="center" align="center">满勤率</div>                                
-        </div>
-    </div> 
-    <h2>二、月度巡查满勤率排行榜</h2>
-	<div id="chuQingSort_grid" class="mini-datagrid" style="width:100%;height:255px;" showPager="false" url="getChuQingSort_Reportjson">
-        <div property="columns">
-        	<div field="city" width="60" headerAlign="center" align="center">县市区</div>        
-            <div field="manqin" width="80" headerAlign="center" align="center">满勤</div>
-            <div field="manqinlv" width="80" headerAlign="center" align="center">满勤率</div>                               
-        </div>
-    </div> 
-
-		</div>
-		<div name="tab2" title="考勤规则">
-			<ul>
-				<li>汛期每日一次</li>
-				<li>非汛期三日一次</li>
-				<li>遇特殊天气，临时加报</li>
-			</ul>
-		</div>
-	</div>
-	<script type="text/javascript">
-		mini.parse();
-		var grid = mini.get("employee_grid");
-        grid.load();
-
-        var chuQingSort_grid=mini.get("chuQingSort_grid");
-        chuQingSort_grid.load();
-
-	</script>
+			<h2 style="font-size: 14px;">一、出勤报告</h2>
+		<table class="table-bordered">
+					<tr>
+						<th width="33.3%">
+							\
+						</th>
+						<th width="33.3%">
+							满勤
+						</th>
+						<th width="33.3%">
+							满勤率
+						</th>
+					</tr>
+					<c:forEach items="${crs}" var="f">
+						<tr>
+							<td align="center">${f.category}</td>
+							<td align="center">${f.fullAttendance}</td>
+							<td align="center">${f.fullAttendanceRate}</td>
+						</tr>
+					</c:forEach>	
+			</table>
+    <h2 style="font-size: 14px;">二、月度巡查满勤率排行榜</h2>
+    		<table class="table-bordered" >
+					<tr>
+						<th width="33.3%">
+							\
+						</th>
+						<th width="33.3%">
+							满勤
+						</th>
+						<th width="33.3%">
+							满勤率
+						</th>
+					</tr>
+					<c:forEach items="${cqs}" var="f">
+						<tr>
+							<td align="center">${f.city}</td>
+							<td align="center">${f.manqin}</td>
+							<td align="center">${f.manqinlv}</td>
+						</tr>
+					</c:forEach>	
+			</table>
 </body>
 </html>
