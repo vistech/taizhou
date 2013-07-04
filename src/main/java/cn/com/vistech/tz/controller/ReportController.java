@@ -30,9 +30,13 @@ public class ReportController {
 	}
 
 	@RequestMapping(value = "/checkOnReport")
-	public Map<String, Object> checkOnReport(String reportName) {
+	public Map<String, Object> checkOnReport(String reportName) throws ParseException {
+		List<CheckOnReport> crs = checkOnReportService.getCheckOnReport(reportName);
+		List<ChuQingSort_ReportBean> cqs = checkOnReportService.getChuQingSort_ReportBean();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("reportName", reportName);
+		map.put("crs", crs);
+		map.put("cqs", cqs);
 		return map;
 	}
 
