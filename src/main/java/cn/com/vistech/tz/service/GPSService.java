@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 
+import cn.com.vistech.tz.bean.BaiduMapBean;
 import cn.com.vistech.tz.bean.DeviceBean;
 import cn.com.vistech.tz.bean.GPSBean;
 import cn.com.vistech.tz.bean.GPSMediaBean;
@@ -18,6 +19,7 @@ import cn.com.vistech.tz.bean.HotAreaBean;
 import cn.com.vistech.tz.bean.HotAreaCheckInBean;
 import cn.com.vistech.tz.bean.MOutBoxBean;
 import cn.com.vistech.tz.bean.OpenMAS_MOutBox;
+import cn.com.vistech.tz.dao.BaiduMapDao;
 import cn.com.vistech.tz.dao.DeviceDao;
 import cn.com.vistech.tz.dao.ExecProDao;
 import cn.com.vistech.tz.dao.GPSDao;
@@ -50,6 +52,8 @@ public class GPSService {
 	private DeviceDao deviceDao;
 	@Autowired
 	private ExecProDao execProxDao;
+	@Autowired
+	private BaiduMapDao baiduMapDao;
 
 	public void addText(GPSBean gps) {
 		gPSDao.save(gps);
@@ -65,6 +69,18 @@ public class GPSService {
 
 	public List<HotAreaBean> getHotArea(String sim) {
 		List<HotAreaBean> hotAreas = hotAreaDao.findByHotareapkSim(sim);
+
+		for (HotAreaBean hotArea : hotAreas) {
+			Double lgtd = hotArea.getpLgtd(); // 经度
+			Double lttd = hotArea.getpLttd(); // 纬度
+
+			BaiduMapBean baiduMap = baiduMapDao.findByLaAndLo(
+					String.valueOf(lttd), String.valueOf(lgtd));
+
+			hotArea.setpLgtd(lgtd + baiduMap.getOffLo());
+			hotArea.setpLttd(lttd + baiduMap.getOffLa());
+		}
+
 		return hotAreas;
 	}
 

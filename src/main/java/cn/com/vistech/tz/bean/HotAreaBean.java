@@ -16,8 +16,10 @@ public class HotAreaBean implements Serializable {
 	@EmbeddedId
 	private HotAreaPKBean hotareapk;
 	
+	//经度
 	@Column(name="lgtd")
 	private Double pLgtd;
+	//纬度
 	@Column(name="lttd")
 	private Double pLttd;
 	@Column(name="name")
