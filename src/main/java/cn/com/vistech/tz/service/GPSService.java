@@ -15,6 +15,7 @@ import cn.com.vistech.tz.bean.DeviceBean;
 import cn.com.vistech.tz.bean.GPSBean;
 import cn.com.vistech.tz.bean.GPSMediaBean;
 import cn.com.vistech.tz.bean.GPSTraceBean;
+import cn.com.vistech.tz.bean.GoogleMapBean;
 import cn.com.vistech.tz.bean.HotAreaBean;
 import cn.com.vistech.tz.bean.HotAreaCheckInBean;
 import cn.com.vistech.tz.bean.MOutBoxBean;
@@ -25,6 +26,7 @@ import cn.com.vistech.tz.dao.ExecProDao;
 import cn.com.vistech.tz.dao.GPSDao;
 import cn.com.vistech.tz.dao.GPSMediaDao;
 import cn.com.vistech.tz.dao.GPSTraceDao;
+import cn.com.vistech.tz.dao.GoogleMapDao;
 import cn.com.vistech.tz.dao.HotAreaCheckInDao;
 import cn.com.vistech.tz.dao.HotAreaDao;
 import cn.com.vistech.tz.dao.MoutBoxDao;
@@ -54,6 +56,8 @@ public class GPSService {
 	private ExecProDao execProxDao;
 	@Autowired
 	private BaiduMapDao baiduMapDao;
+	@Autowired
+	private GoogleMapDao googleMapDao;
 
 	public void addText(GPSBean gps) {
 		gPSDao.save(gps);
@@ -77,8 +81,15 @@ public class GPSService {
 			BaiduMapBean baiduMap = baiduMapDao.findByLaAndLo(
 					String.valueOf(lttd), String.valueOf(lgtd));
 
-			hotArea.setpLgtd(lgtd + baiduMap.getOffLo());
-			hotArea.setpLttd(lttd + baiduMap.getOffLa());
+			GoogleMapBean googleMap = googleMapDao.findByLaAndLo(
+					String.valueOf(lttd), String.valueOf(lgtd));
+			if (baiduMap != null && googleMap != null) {
+
+				hotArea.setpLgtd(lgtd + baiduMap.getOffLo()
+						- googleMap.getOffLo());
+				hotArea.setpLttd(lttd + baiduMap.getOffLa()
+						- googleMap.getOffLa());
+			}
 		}
 
 		return hotAreas;
